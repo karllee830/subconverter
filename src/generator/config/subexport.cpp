@@ -1115,6 +1115,19 @@ std::string proxyToSurge(std::vector<Proxy> &nodes, const std::string &base_conf
                 if (!x.Ports.empty())
                     proxy += ",port-hopping=" + x.Ports;
                 break;
+            case ProxyType::AnyTLS:
+                if (surge_ver < 4)
+                    continue;
+                proxy = "anytls, " + hostname + ", " + port + ", password=" + password;
+                if (!x.SNI.empty())
+                    proxy += ", sni=" + x.SNI;
+                if (!scv.is_undef())
+                    proxy += ", skip-cert-verify=" + scv.get_str();
+                if (!x.Fingerprint.empty())
+                    proxy += ", server-cert-fingerprint-sha256=" + x.Fingerprint;
+                if (!tls13.is_undef())
+                    proxy += ", tls13=" + std::string(tls13 ? "true" : "false");
+                break;
             case ProxyType::WireGuard:
                 if (surge_ver < 4 && surge_ver != -3)
                     continue;
