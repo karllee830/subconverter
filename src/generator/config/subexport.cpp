@@ -2254,7 +2254,8 @@ proxyToLoon(std::vector<Proxy> &nodes, const std::string &base_conf,
         std::string &hostname = x.Hostname, &username = x.Username, &password = x.Password, &method = x.EncryptMethod, &
                 plugin = x.Plugin, &pluginopts = x.PluginOption, &id = x.UserId, &transproto = x.TransferProtocol, &host
                 = x.Host, &path = x.Path, &protocol = x.Protocol, &protoparam = x.ProtocolParam, &obfs = x.OBFS, &
-                obfsparam = x.OBFSParam, flow = x.Flow, pk = x.PublicKey, shortId = x.ShortId, sni = x.ServerName;
+                obfsparam = x.OBFSParam, flow = x.Flow, pk = x.PublicKey, shortId = x.ShortId, sni = x.ServerName,
+                fingerprint = x.Fingerprint;
         std::string port = std::to_string(x.Port), aid = std::to_string(x.AlterId);
         bool &tlssecure = x.TLSSecure;
 
@@ -2300,32 +2301,33 @@ proxyToLoon(std::vector<Proxy> &nodes, const std::string &base_conf,
                     proxy += ",skip-cert-verify=" + std::string(scv.get() ? "true" : "false");
                 break;
             case ProxyType::VLESS:
-                if (flow != "xtls-rprx-vision") {
-                    if (transproto == "ws") {
-                        proxy = "VLESS," + hostname + "," + port + ",\"" + id + "\"" +
-                            ",path=" + path + ",host=" + host + ",transport=" + transproto +
-                            ",udp=" + (udp.get() ? "true" : "false") + ",over-tls=" + (
-                                tlssecure ? "true" : "false") + ",sni=" + sni;
-                    } else {
-                        continue;
-                    }
-                } else {
-                    proxy = "VLESS," + hostname + "," + port + ",\"" + id + "\",flow=" + flow + ",public-key=\"" + pk +
-                            "\",short-id=" + shortId + ",udp=" + (udp.get() ? "true" : "false") + ",over-tls=" + (
-                                tlssecure ? "true" : "false") + ",sni=" + sni;
-                }
-
+                proxy = "VLESS," + hostname + "," + port + ",\"" + id + "\"";
                 switch (hash_(transproto)) {
                     case "tcp"_hash:
                         proxy += ",transport=tcp";
                         break;
+                    case "http"_hash:
+                    case "h2"_hash:
+                        proxy += ",transport=http,path=" + (path.empty() ? "/" : path) + ",host=" + host;
+                        break;
+                    case "ws"_hash:
+                        proxy += ",transport=ws,path=" + (path.empty() ? "/" : path) + ",host=" + host;
+                        break;
                     default:
-                        if (transproto != "ws") {
-                            continue;
-                        } else {
-                            break;;
-                        }
+                        continue;
                 }
+                if (!flow.empty())
+                    proxy += ",flow=" + flow;
+                if (!pk.empty())
+                    proxy += ",public-key=\"" + pk + "\"";
+                if (!shortId.empty())
+                    proxy += ",short-id=" + shortId;
+                proxy += ",udp=" + std::string(udp.get() ? "true" : "false") + ",over-tls=" +
+                         (tlssecure ? "true" : "false");
+                if (!sni.empty())
+                    proxy += ",sni=" + sni;
+                if (!fingerprint.empty())
+                    proxy += ",tls-profile=" + fingerprint;
                 if (!scv.is_undef())
                     proxy += ",skip-cert-verify=" + std::string(scv.get() ? "true" : "false");
                 break;
@@ -2410,6 +2412,16 @@ proxyToLoon(std::vector<Proxy> &nodes, const std::string &base_conf,
                 } else {
                     proxy += ",download-bandwidth=100";
                 }
+                if (!scv.is_undef())
+                    proxy += ",skip-cert-verify=" + std::string(scv.get() ? "true" : "false");
+                break;
+            case ProxyType::AnyTLS:
+                proxy = "AnyTLS," + hostname + "," + port + ",\"" + password + "\"";
+                if (!x.SNI.empty())
+                    proxy += ",sni=" + x.SNI;
+                if (!fingerprint.empty())
+                    proxy += ",tls-profile=" + fingerprint;
+                proxy += ",udp=" + std::string(udp.get() ? "true" : "false");
                 if (!scv.is_undef())
                     proxy += ",skip-cert-verify=" + std::string(scv.get() ? "true" : "false");
                 break;
