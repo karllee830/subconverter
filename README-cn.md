@@ -170,6 +170,7 @@ http://127.0.0.1:25500/sub?target=%TARGET%&url=%URL%&config=%CONFIG%
 | ------ | :-: | :------------------------ | ------------------------------------------------------------------------------------------------------------------- |
 | target |  必要 | surge&ver=4               | 指想要生成的配置类型，详见上方 [支持类型](#支持类型) 中的参数                                                                                  |
 | url    |  必要 | https%3A%2F%2Fwww.xxx.com | 指机场所提供的订阅链接或代理节点的分享链接，需要经过 [URLEncode](https://www.urlencoder.org/) 处理                                              |
+| ua     |  可选 | ClashforWindows%2F0.20.39 | 指访问上游节点订阅时使用的 `User-Agent`，需要经过 [URLEncode](https://www.urlencoder.org/) 处理                                                |
 | config |  可选 | https%3A%2F%2Fwww.xxx.com | 指 外部配置 的地址 (包含分组和规则部分)，需要经过 [URLEncode](https://www.urlencoder.org/) 处理，详见 [外部配置](#外部配置) ，当此参数不存在时使用 程序的主程序目录中的配置文件 |
 
 运行 subconverter 主程序后，按照 [调用说明](#调用说明) 的对应内容替换即可得到一份使用**默认设置**的订阅。

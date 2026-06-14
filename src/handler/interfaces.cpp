@@ -340,6 +340,7 @@ std::string subconverter(RESPONSE_CALLBACK_ARGS) {
         "filename"), argUpdateInterval = getUrlArg(
         argument, "interval"), argUpdateStrict = getUrlArg(argument, "strict");
     std::string argRenames = getUrlArg(argument, "rename"), argFilterScript = getUrlArg(argument, "filter_script");
+    std::string argUserAgent = getUrlArg(argument, "ua");
 
     /// switches with default value
     tribool argUpload = getUrlArg(argument, "upload"), argEmoji = getUrlArg(argument, "emoji"), argAddEmoji = getUrlArg(
@@ -373,6 +374,8 @@ std::string subconverter(RESPONSE_CALLBACK_ARGS) {
     if (std::find(gRegexBlacklist.cbegin(), gRegexBlacklist.cend(), argIncludeRemark) != gRegexBlacklist.cend() ||
         std::find(gRegexBlacklist.cbegin(), gRegexBlacklist.cend(), argExcludeRemark) != gRegexBlacklist.cend())
         return "Invalid request!";
+    if (!argUserAgent.empty())
+        request.headers["User-Agent"] = argUserAgent;
 
     /// for external configuration
     std::string lClashBase = global.clashBase, lSurgeBase = global.surgeBase, lMellowBase = global.mellowBase,
