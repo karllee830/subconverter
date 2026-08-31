@@ -567,6 +567,9 @@ proxyToClash(std::vector<Proxy> &nodes, YAML::Node &yamlnode, const ProxyGroupCo
                 break;
             case ProxyType::AnyTLS:
                 singleproxy["type"] = "anytls";
+                if (ext.clash_anytls_disable_reuse) {
+                    singleproxy["disable-reuse"] = true;
+                }
                 if (!x.Password.empty()) {
                     singleproxy["password"] = x.Password;
                 }

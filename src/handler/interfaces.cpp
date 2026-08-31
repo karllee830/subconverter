@@ -355,6 +355,7 @@ std::string subconverter(RESPONSE_CALLBACK_ARGS) {
     tribool argPrependInsert = getUrlArg(argument, "prepend"), argGenClassicalRuleProvider = getUrlArg(argument,
         "classic"), argTLS13 = getUrlArg(
         argument, "tls13");
+    tribool argAnyTLSReuse = getUrlArg(argument, "anytls_reuse");
 
     std::string base_content, output_content;
     ProxyGroupConfigs lCustomProxyGroups = global.customProxyGroups;
@@ -447,6 +448,8 @@ std::string subconverter(RESPONSE_CALLBACK_ARGS) {
     ext.filter_deprecated = argFilterDeprecated.get(global.filterDeprecated);
     ext.clash_new_field_name = argClashNewField.get(global.clashUseNewField);
     ext.clash_script = argGenClashScript.get();
+    ext.clash_anytls_disable_reuse =
+            argTarget == "clash" && !argAnyTLSReuse.is_undef() && !argAnyTLSReuse.get();
     ext.clash_classical_ruleset = argGenClassicalRuleProvider.get();
     if (!argExpandRulesets)
         ext.clash_new_field_name = true;
