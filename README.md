@@ -96,7 +96,7 @@ http://127.0.0.1:25500/sub?target=%TARGET%&url=%URL%&config=%CONFIG%
 | target   | Yes      | clash   | Target subscription type. Acquire from Target Name in [Supported Types](#supported-types). |
 | url      | Yes      | https%3A%2F%2Fwww.xxx.com | Subscription to convert. Supports URLs and file paths. Process with [URLEncode](https://www.urlencoder.org/) first. |
 | config   | No       | https%3A%2F%2Fwww.xxx.com | External configuration file path. Supports URLs and file paths. Process with [URLEncode](https://www.urlencoder.org/) first. More examples can be found in [this](https://github.com/lzdnico/subconverteriniexample) repository. |
-| anytls_reuse | No   | false   | When `target=clash`, set to `false` to add `disable-reuse: true` to generated AnyTLS proxies. |
+| anytls_reuse | No   | false   | Set to `false` to disable AnyTLS connection reuse: adds `disable-reuse: true` for `target=clash`, or `reuse=false` for `target=surge` with `ver=4` or `ver=5`. Other targets keep their original behavior. |
 
 If you need to merge two or more subscription, you should join them with '|' before the URLEncode process.
 

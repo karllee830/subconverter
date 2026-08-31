@@ -567,7 +567,7 @@ proxyToClash(std::vector<Proxy> &nodes, YAML::Node &yamlnode, const ProxyGroupCo
                 break;
             case ProxyType::AnyTLS:
                 singleproxy["type"] = "anytls";
-                if (ext.clash_anytls_disable_reuse) {
+                if (ext.anytls_disable_reuse) {
                     singleproxy["disable-reuse"] = true;
                 }
                 if (!x.Password.empty()) {
@@ -1122,6 +1122,8 @@ std::string proxyToSurge(std::vector<Proxy> &nodes, const std::string &base_conf
                 if (surge_ver < 4)
                     continue;
                 proxy = "anytls, " + hostname + ", " + port + ", password=" + password;
+                if (ext.anytls_disable_reuse)
+                    proxy += ", reuse=false";
                 if (!x.SNI.empty())
                     proxy += ", sni=" + x.SNI;
                 if (!scv.is_undef())
