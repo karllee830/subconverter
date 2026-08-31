@@ -2,6 +2,7 @@ FROM alpine:3.16 AS builder
 LABEL maintainer="tindy.it@gmail.com"
 ARG THREADS="4"
 ARG SHA=""
+ARG LIBCRON_COMMIT="ee34810b11bd23c8be637345532f91059b68b2d7"
 
 # build minimized
 WORKDIR /
@@ -21,9 +22,13 @@ RUN set -xe && \
     install -m644 quickjs/quickjs.h quickjs/quickjs-libc.h /usr/include/quickjs/ && \
     install -m644 quickjspp.hpp /usr/include && \
     cd .. && \
-    git clone https://github.com/PerMalmberg/libcron --depth=1 && \
+    mkdir libcron && \
     cd libcron && \
-    git submodule update --init && \
+    git init && \
+    git remote add origin https://github.com/PerMalmberg/libcron && \
+    git fetch --depth=1 origin "$LIBCRON_COMMIT" && \
+    git checkout --detach FETCH_HEAD && \
+    git submodule update --init --depth=1 libcron/externals/date && \
     cmake -DCMAKE_BUILD_TYPE=Release . && \
     make libcron -j $THREADS && \
     install -m644 libcron/out/Release/liblibcron.a /usr/lib/ && \
